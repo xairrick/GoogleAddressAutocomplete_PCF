@@ -22,6 +22,8 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         notifyOutputChanged: () => void,
         state: ComponentFramework.Dictionary,
         container: HTMLDivElement) {
+
+        debugger;
         if (typeof (context.parameters.googleapikey) === "undefined" ||
             typeof (context.parameters.googleapikey.raw) === "undefined") {
             container.innerHTML = "Please provide a valid google api key";
@@ -39,7 +41,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         container.appendChild(this.searchBox);
 
         let googleApiKey = context.parameters.googleapikey.raw;
-        let scriptUrl = "https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=" + googleApiKey;
+        let scriptUrl = `https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=${googleApiKey}`;
 
         let scriptNode = document.createElement("script");
         scriptNode.setAttribute("type", "text/javascript");
@@ -53,24 +55,23 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
             // When the user selects an address from the drop-down, populate the
             // address fields in the form.
             this.autocomplete.addListener('place_changed', () => {
+                debugger;
                 let place = this.autocomplete.getPlace();
                 if (place == null || place.address_components == null) {
                     return;
                 }
-
-                this.value = "";
-                this.street = "";
-                this.city = "";
-                this.county = "";
-                this.state = "";
-                this.country = "";
-                this.zipcode = "";
-
+                this.value = place.formatted_address || "";
+                this.street = (this.getLongName(place.address_components, ["street_number"]) + " " + this.getLongName(place.address_components, ["route"])).trim();
+                this.city = this.getLongName(place.address_components, ["locality", "neighborhood", "postal_town"]);  //https://developers.google.com/maps/documentation/geocoding/intro#Types
+                this.county = this.getLongName(place.address_components, ["administrative_area_level_2"]);
+                this.state = this.getShortName(place.address_components, ["administrative_area_level_1"]);
+                this.country = this.getShortName(place.address_components, ["country"]);
+                this.zipcode = this.getLongName(place.address_components, ["postal_code"]);
+                /*
                 let streetNumber = "";
-
                 for (var i = 0; i < place.address_components.length; i++) {
-                    let addressComponent = place.address_components[i];
-                    let componentType = addressComponent.types[0];
+                    let addressComponent: google.maps.GeocoderAddressComponent  = place.address_components[i];
+                    let componentType: string = addressComponent.types[0];
                     let addressPiece = addressComponent.long_name;
 
                     switch (componentType) {
@@ -80,6 +81,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
                         case "route":
                             this.street = addressPiece + streetNumber;
                             break;
+                        case "neighborhood":
                         case "locality":
                         case "postal_town":
                             this.city = addressPiece;
@@ -99,8 +101,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
                     }
 
                 }
-
-                this.value = place.formatted_address || "";
+                */
                 this.notifyOutputChanged();
             });
         },
@@ -146,5 +147,19 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
 	 */
     public destroy(): void {
         // Add code to cleanup control if necessary
+    }
+    private getLongName(addressComponents: google.maps.GeocoderAddressComponent[], types: string[]): string {
+        let address = addressComponents.find((x) => x.types.some(t => types.includes(t)));
+        if (address === undefined)
+            return "";
+        else
+            return (<google.maps.GeocoderAddressComponent>address).long_name;
+    }
+    private getShortName(addressComponents: google.maps.GeocoderAddressComponent[], types: string[]): string {
+        let address = addressComponents.find((x) => x.types.some(t => types.includes(t)));
+        if (address === undefined)
+            return "";
+        else
+            return (<google.maps.GeocoderAddressComponent>address).short_name;
     }
 }
