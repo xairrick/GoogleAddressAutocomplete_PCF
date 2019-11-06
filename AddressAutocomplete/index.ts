@@ -23,12 +23,23 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         state: ComponentFramework.Dictionary,
         container: HTMLDivElement) {
 
+        let googleApiKey = context.parameters.googleapikey.raw;
+
         debugger;
-        if (typeof (context.parameters.googleapikey) === "undefined" ||
-            typeof (context.parameters.googleapikey.raw) === "undefined") {
-            container.innerHTML = "Please provide a valid google api key";
-            return;
+        //if (typeof (context.parameters.googleapikey) === "undefined" ||
+        //    typeof (context.parameters.googleapikey.raw) === "undefined") {
+        //    container.innerHTML = "Please provide a valid google api key";
+        //    return;
+        //}
+
+        
+        //let googleApiKey = context.parameters.googleapikey.raw;
+        if (!googleApiKey || googleApiKey === 'val') {
+            googleApiKey = prompt("Please provide a valid google api key");
+            //container.innerHTML = "Please provide a valid google api key";
+            //return;
         }
+
 
         this.notifyOutputChanged = notifyOutputChanged;
 
@@ -40,7 +51,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
 
         container.appendChild(this.searchBox);
 
-        let googleApiKey = context.parameters.googleapikey.raw;
+        //let googleApiKey = context.parameters.googleapikey.raw;
         let scriptUrl = `https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=${googleApiKey}`;
 
         let scriptNode = document.createElement("script");
@@ -130,15 +141,19 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
 	 * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as “bound” or “output”
 	 */
     public getOutputs(): IOutputs {
-        return {
+       
+        let ret: IOutputs = {
             value: this.value,
             street: this.street,
             city: this.city,
             county: this.county,
             state: this.state,
+            state_number: this.convertState(this.state),
             country: this.country,
             zipcode: this.zipcode
-        };
+        }
+
+        return ret;
     }
 
 	/** 
@@ -162,4 +177,22 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         else
             return (<google.maps.GeocoderAddressComponent>address).short_name;
     }
+    private convertState(state: string): number | undefined {
+        var states = [
+            { state: 'CT', value: 100000008 },
+            { state: 'ME', value: 100000000 },
+            { state: 'NH', value: 100000002 },
+            { state: 'NY', value: 100000005 },
+            { state: 'PA', value: 100000006 },
+            { state: 'PA', value: 100000006 },
+            { state: 'VT', value: 100000003 },
+            { state: 'RI', value: 100000007 } 
+        ];
+
+        var ret = states.find(s => s.state.toUpperCase() === state.toUpperCase());
+        if (ret === undefined)
+            return undefined;
+        else
+            return ret.value;
+    };
 }
