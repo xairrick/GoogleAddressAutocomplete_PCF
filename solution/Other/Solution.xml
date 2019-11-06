@@ -2,13 +2,13 @@
 <ImportExportXml version="9.1.0.643" SolutionPackageVersion="9.1" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SolutionManifest>
     <!-- Unique Name of Cds Solution-->
-    <UniqueName>solution</UniqueName>
+    <UniqueName>GoogleAddressAutocomplete</UniqueName>
     <LocalizedNames>
       <!-- Localized Solution Name in language code -->
-      <LocalizedName description="solution" languagecode="1033" />
+      <LocalizedName description="Google Address Autocomplete" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-    <Version>1.0</Version>
+    <Version>2019.11.05.01</Version>
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>2</Managed>
     <Publisher>
@@ -24,8 +24,11 @@
       </Descriptions>
       <EMailAddress xsi:nil="true"></EMailAddress>
       <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
-      <!-- Customization Prefix for the Cds Publisher-->
-      <CustomizationPrefix>ab</CustomizationPrefix>
+      
+	  <!-- this is causing the generated solution.xml file to have the a double prefix, I assume there is a bug in the PCF framework -->
+	  <!-- Customization Prefix for the Cds Publisher-->
+      <!-- <CustomizationPrefix>ab</CustomizationPrefix> -->
+	  
       <!-- Derived Option Value Prefix for the Customization Prefix of Cds Publisher -->
       <CustomizationOptionValuePrefix>50535</CustomizationOptionValuePrefix>
       <Addresses>
