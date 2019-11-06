@@ -1,5 +1,9 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 
+interface IStateValue {
+    state: string;
+    value: number;
+}
 export class AddressAutocomplete implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     private notifyOutputChanged: () => void;
@@ -172,27 +176,13 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
     }
     private getShortName(addressComponents: google.maps.GeocoderAddressComponent[], types: string[]): string {
         let address = addressComponents.find((x) => x.types.some(t => types.includes(t)));
-        if (address === undefined)
-            return "";
-        else
-            return (<google.maps.GeocoderAddressComponent>address).short_name;
+        return address &&  address.short_name || "";
     }
     private convertState(state: string): number | undefined {
-        var states = [
-            { state: 'CT', value: 100000008 },
-            { state: 'ME', value: 100000000 },
-            { state: 'NH', value: 100000002 },
-            { state: 'NY', value: 100000005 },
-            { state: 'PA', value: 100000006 },
-            { state: 'PA', value: 100000006 },
-            { state: 'VT', value: 100000003 },
-            { state: 'RI', value: 100000007 } 
-        ];
+        var newStates = '[{"state": "CT","value": 100000008},{"state": "ME","value": 100000000},{"state": "NH","value": 100000002},{"state": "NY","value": 100000005},{"state": "PA","value": 100000006},{"state": "PA","value": 100000006},{"state": "VT","value": 100000003},{"state": "RI","value": 100000007}]';
+        var states = <IStateValue[]>JSON.parse(newStates);
 
-        var ret = states.find(s => s.state.toUpperCase() === state.toUpperCase());
-        if (ret === undefined)
-            return undefined;
-        else
-            return ret.value;
+        var ret = states.find((s: any) => s.state.toUpperCase() === state.toUpperCase());
+        return ret && ret.value || undefined;
     };
 }
