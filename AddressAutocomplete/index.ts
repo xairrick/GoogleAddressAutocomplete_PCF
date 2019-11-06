@@ -8,6 +8,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
 
     private notifyOutputChanged: () => void;
     private searchBox: HTMLInputElement;
+    private _context: ComponentFramework.Context<IInputs>;
 
     private autocomplete: google.maps.places.Autocomplete;
     private value: string;
@@ -17,6 +18,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
     private state: string;
     private zipcode: string;
     private country: string;
+    private stateTransform: IStateValue[];
 
     constructor() {
 
@@ -27,21 +29,12 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         state: ComponentFramework.Dictionary,
         container: HTMLDivElement) {
 
-        let googleApiKey = context.parameters.googleapikey.raw;
-
+        this._context = context;
         debugger;
-        //if (typeof (context.parameters.googleapikey) === "undefined" ||
-        //    typeof (context.parameters.googleapikey.raw) === "undefined") {
-        //    container.innerHTML = "Please provide a valid google api key";
-        //    return;
-        //}
 
-        
-        //let googleApiKey = context.parameters.googleapikey.raw;
+        let googleApiKey = context.parameters.googleapikey.raw;
         if (!googleApiKey || googleApiKey === 'val') {
             googleApiKey = prompt("Please provide a valid google api key");
-            //container.innerHTML = "Please provide a valid google api key";
-            //return;
         }
 
 
@@ -152,7 +145,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
             city: this.city,
             county: this.county,
             state: this.state,
-            state_number: this.convertState(this.state),
+            state_number: this.transformState(this.state),
             country: this.country,
             zipcode: this.zipcode
         }
@@ -178,9 +171,13 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         let address = addressComponents.find((x) => x.types.some(t => types.includes(t)));
         return address &&  address.short_name || "";
     }
-    private convertState(state: string): number | undefined {
-        var newStates = '[{"state": "CT","value": 100000008},{"state": "ME","value": 100000000},{"state": "NH","value": 100000002},{"state": "NY","value": 100000005},{"state": "PA","value": 100000006},{"state": "PA","value": 100000006},{"state": "VT","value": 100000003},{"state": "RI","value": 100000007}]';
-        var states = <IStateValue[]>JSON.parse(newStates);
+    private transformState(state: string): number | undefined {
+        // [{'state': 'CT','value': 100000008},{'state': 'ME','value': 100000000},{'state': 'NH','value': 100000002},{'state': 'NY','value': 100000005},{'state': 'PA','value': 100000006},{'state': 'PA','value': 100000006},{'state': 'VT','value': 100000003},{'state': 'RI','value': 100000007}]
+        if (!this._context.parameters.stateTransform.raw || this._context.parameters.stateTransform.raw === 'val')
+            return undefined;
+
+        var rawStates = this._context.parameters.stateTransform.raw.replace(/'/g, '"');
+        var states = <IStateValue[]>JSON.parse(rawStates);
 
         var ret = states.find((s: any) => s.state.toUpperCase() === state.toUpperCase());
         return ret && ret.value || undefined;
