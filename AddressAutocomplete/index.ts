@@ -70,7 +70,7 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
                 }
                 this.value = place.formatted_address || "";
                 this.street = (this.getLongName(place.address_components, ["street_number"]) + " " + this.getLongName(place.address_components, ["route"])).trim();
-                this.city = this.getLongName(place.address_components, ["locality", "neighborhood", "postal_town"]);  //https://developers.google.com/maps/documentation/geocoding/intro#Types
+                this.city = this.getLongName(place.address_components, ["locality","sublocality", "neighborhood", "administrative_area_level_3"]);  //https://developers.google.com/maps/documentation/geocoding/intro#Types
                 this.county = this.getLongName(place.address_components, ["administrative_area_level_2"]);
                 this.state = this.getShortName(place.address_components, ["administrative_area_level_1"]);
                 this.country = this.getShortName(place.address_components, ["country"]);
@@ -161,7 +161,12 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         // Add code to cleanup control if necessary
     }
     private getLongName(addressComponents: google.maps.GeocoderAddressComponent[], types: string[]): string {
-        let address = addressComponents.find((x) => x.types.some(t => types.includes(t)));
+
+        var address: google.maps.GeocoderAddressComponent | undefined;
+        for (var i = 0; i < types.length; i++) {
+            address = addressComponents.find((x) => x.types.includes(types[i]));
+            if (address) { break; }
+        }
         if (address === undefined)
             return "";
         else
@@ -172,12 +177,14 @@ export class AddressAutocomplete implements ComponentFramework.StandardControl<I
         return address &&  address.short_name || "";
     }
     private transformState(state: string): number | undefined {
-        // [{'state': 'CT','value': 100000008},{'state': 'ME','value': 100000000},{'state': 'NH','value': 100000002},{'state': 'NY','value': 100000005},{'state': 'PA','value': 100000006},{'state': 'PA','value': 100000006},{'state': 'VT','value': 100000003},{'state': 'RI','value': 100000007}]
+         // [{'state': 'CT','value': 100000008},{'state': 'ME','value': 100000000},{'state': 'NH','value': 100000002},{'state': 'NY','value': 100000005},{'state': 'PA','value': 100000006},{'state': 'PA','value': 100000006},{'state': 'VT','value': 100000003},{'state': 'RI','value': 100000007}]
+        var rawStates: string;
         if (!this._context.parameters.stateTransform.raw || this._context.parameters.stateTransform.raw === 'val')
-            return undefined;
-
-        var rawStates = this._context.parameters.stateTransform.raw.replace(/'/g, '"');
-        var states = <IStateValue[]>JSON.parse(rawStates);
+            rawStates = "[{'state': 'CT','value': 100000008},{'state': 'ME','value': 100000000},{'state': 'NH','value': 100000002},{'state': 'NY','value': 100000005},{'state': 'PA','value': 100000006},{'state': 'PA','value': 100000006},{'state': 'VT','value': 100000003},{'state': 'RI','value': 100000007}]";
+        else 
+            rawStates = this._context.parameters.stateTransform.raw || "";
+        
+        var states = <IStateValue[]>JSON.parse(rawStates.replace(/'/g, '"'));
 
         var ret = states.find((s: any) => s.state.toUpperCase() === state.toUpperCase());
         return ret && ret.value || undefined;

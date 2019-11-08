@@ -3,14 +3,14 @@
   <control namespace="AB" constructor="AddressAutocomplete" version="0.0.10" display-name-key="Google Address Autocomplete" description-key="Use this control to enable address autocomplete feature powered by Google Places API" control-type="standard">
     <property name="value" display-name-key="Full Address" description-key="Full Address" of-type="SingleLine.Text" usage="bound" required="true" />
     <property name="googleapikey" display-name-key="Google Api Key" description-key="Enter valid Google API Key to enable address autocomplete functionality" of-type="SingleLine.Text" usage="input" required="true" default-value="" />
-    <property name="stateTransform" display-name-key="State to Optionset Mapping" description-key="JSON array of keyvalue pairs that will map the string representation of the state to an option set valid.  NOTE: okay to use single quotes\nFor Example\n[{'state': 'CT','value': 100000008},{'state': 'ME','value': 100000000}]" of-type="Multiple" usage="input" required="false" default-value="" />
-    <property name="street" display-name-key="Street" description-key="Street" of-type="SingleLine.Text" usage="bound" required="true" />
-    <property name="city" display-name-key="City" description-key="City" of-type="SingleLine.Text" usage="bound" required="true" />
-    <property name="county" display-name-key="County" description-key="County" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="stateTransform" display-name-key="State to Optionset Mapping (NOT IMPLEMENTED) " description-key="(NOT IMPLEMENTED) place hold for future enhancment" of-type="SingleLine.Text" usage="input" required="false"  />
+    <property name="street" display-name-key="Street" description-key="Street" of-type="SingleLine.Text" usage="bound" required="false" />
+    <property name="city" display-name-key="City" description-key="City" of-type="SingleLine.Text" usage="bound" required="false" />
+    <property name="county" display-name-key="County" description-key="County" of-type="SingleLine.Text" usage="bound" required="false" />
     <property name="state" display-name-key="State/Region" description-key="State/Region (string)" of-type="SingleLine.Text" usage="bound" required="false" />
     <property name="state_number" display-name-key="State/Region (optionset)" description-key="State/Region (Optionset) will map the states to an optionset" of-type="OptionSet" usage="bound" required="false" />
-    <property name="zipcode" display-name-key="Zip Code" description-key="Zip Code" of-type="SingleLine.Text" usage="bound" required="true" />
-    <property name="country" display-name-key="Country" description-key="Country" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="zipcode" display-name-key="Zip Code" description-key="Zip Code" of-type="SingleLine.Text" usage="bound" required="false" />
+    <property name="country" display-name-key="Country" description-key="Country" of-type="SingleLine.Text" usage="bound" required="false" />
     <resources>
       <code path="index.ts" order="1"/>
       <css path="css/AddressAutocomplete.css" order="1" />

@@ -8,7 +8,7 @@
       <LocalizedName description="Google Address Autocomplete" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-    <Version>2019.11.05.01</Version>
+    <Version>2019.11.07.07</Version>
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>2</Managed>
     <Publisher>
@@ -27,7 +27,7 @@
       
 	  <!-- this is causing the generated solution.xml file to have the a double prefix, I assume there is a bug in the PCF framework -->
 	  <!-- Customization Prefix for the Cds Publisher-->
-      <!-- <CustomizationPrefix>ab</CustomizationPrefix> -->
+       <CustomizationPrefix>ab</CustomizationPrefix> 
 	  
       <!-- Derived Option Value Prefix for the Customization Prefix of Cds Publisher -->
       <CustomizationOptionValuePrefix>50535</CustomizationOptionValuePrefix>
